@@ -7,12 +7,14 @@ import { BaseService } from '../service/base-service';
 import { DialogEditWrapper } from '../student-editor/dialog-edit-wrapper/dialog-edit-wrapper';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { ViewChild } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'material-table',
   styleUrl: 'material-table.css',
   templateUrl: 'material-table.html',
-  imports: [MatTableModule, MatButtonModule, MatPaginatorModule],
+  imports: [MatTableModule, MatButtonModule, MatPaginatorModule, MatFormFieldModule, MatInputModule],
 })
 export class MaterialTable implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
@@ -29,6 +31,12 @@ export class MaterialTable implements OnInit {
   ngOnInit(): void {
     this.loadStudents();
   }
+
+  applyFilter(event: Event){
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
 
   loadStudents(): void {
     this.baseService.getAllStudents().subscribe(data => {

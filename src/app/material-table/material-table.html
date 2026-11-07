@@ -1,8 +1,21 @@
-<button mat-raised-button color="primary" (click)="addNewStudent()">Add student</button>
-<mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                 showFirstLastButtons
-                 aria-label="Select page of students">
-</mat-paginator>
+
+<div style="display: flex">
+   
+  <mat-form-field style="flex: 1" gap 320px>
+      <mat-label>Filter </mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Denis" #input>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="addNewStudent()">Add student</button>
+
+</div>
+
+ <mat-paginator margin-left: auto
+                    showFirstLastButtons
+                    [pageSizeOptions]="[5, 10, 20]"
+                    aria-label="Select page of students">
+  </mat-paginator>
+
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
   <ng-container matColumnDef="id">
@@ -30,6 +43,8 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
+  <tr class="mat-row" *matNoDataRow>
+    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+  </tr>
 
 </table>
