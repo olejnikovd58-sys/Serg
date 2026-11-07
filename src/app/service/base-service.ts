@@ -8,16 +8,17 @@ import { HttpClient } from '@angular/common/http';
 )
 export class BaseService {
 
-    private studentsUrl = 'https://4e5e878747659d6b.mokky.dev/DataOfStudents';
+    public studentsUrl = 'https://4e5e878747659d6b.mokky.dev/DataOfStudents';
+
 
     constructor(private http: HttpClient){
 
     }
 
     getAllStudents(): Observable<Student[]> {
-        return this.http.get<Student[]>(this.studentsUrl);
+    return this.http.get<Student[]>(this.studentsUrl);
     }
-    
+
     addNewStudent(student: Student): Observable<Student> { 
         console.log("AddNewStudent");
         return this.http.post<Student>(this.studentsUrl, student)
@@ -30,7 +31,7 @@ export class BaseService {
 
 editStudent(student: Student): Observable<Student> {
     console.log("edit student")
-  return this.http.put<Student>(`${this.studentsUrl}/${student.id}`, student);
+  return this.http.patch<Student>(`${this.studentsUrl}/${student.id}`, student);
 }
 
 }
