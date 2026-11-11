@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Student } from '../models/student';
 import { BaseService } from '../service/base-service';
 import { DialogEditWrapper } from '../student-editor/dialog-edit-wrapper/dialog-edit-wrapper';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ViewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,10 +17,14 @@ import { MatInputModule } from '@angular/material/input';
   imports: [MatTableModule, MatButtonModule, MatPaginatorModule, MatFormFieldModule, MatInputModule],
 })
 export class MaterialTable implements OnInit {
+  totalItems = 0;
+  currentPage = 1;
+  pageSize = 10;
+  searchText = '';
   displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
   dataSource = new MatTableDataSource<Student>([])
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  
 
   constructor(
     private baseService: BaseService,
@@ -29,21 +33,28 @@ export class MaterialTable implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadStudents();
+    this.loadPage();
   }
 
   applyFilter(event: Event){
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchText = filterValue.trim();
+    this.currentPage = 1;
+    this.loadPage();
   }
 
+  onPageChange(event: PageEvent): void{
+    this.currentPage = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.loadPage();
+  }
 
-  loadStudents(): void {
-    this.baseService.getAllStudents().subscribe(data => {
-      this.dataSource.data = data;
-      this.dataSource.paginator = this.paginator;
+  loadPage(): void {
+    this.baseService.getStudentPage(this.currentPage, this.pageSize, this.searchText).subscribe(res => {
+      this.dataSource.data = res.items;
+      this.totalItems = res.meta.total_items;
       this.cdr.detectChanges();
-    });
+    })
   }
 
   addNewStudent(): void {
@@ -55,7 +66,7 @@ export class MaterialTable implements OnInit {
     dialogRef.afterClosed().subscribe((result: Student) => {
       if (result) {
         this.baseService.addNewStudent(result).subscribe(() => {
-          this.loadStudents();
+          this.loadPage();
         });
       }
     });
@@ -70,7 +81,7 @@ export class MaterialTable implements OnInit {
     dialogRef.afterClosed().subscribe((result: Student) => {
       if (result) {
         this.baseService.editStudent(result).subscribe(() => {
-          this.loadStudents();
+          this.loadPage();
         });
       }
     });
@@ -79,7 +90,7 @@ export class MaterialTable implements OnInit {
   deleteStudent(student: Student): void {
     if (!student.id) return;
     this.baseService.deleteStudent(student.id).subscribe(() => {
-      this.loadStudents();
+      this.loadPage();
     });
   }
 }

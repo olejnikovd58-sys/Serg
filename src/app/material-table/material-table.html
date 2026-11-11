@@ -10,11 +10,14 @@
 
 </div>
 
- <mat-paginator margin-left: auto
-                    showFirstLastButtons
-                    [pageSizeOptions]="[5, 10, 20]"
-                    aria-label="Select page of students">
-  </mat-paginator>
+ <mat-paginator
+  [length]="totalItems"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="onPageChange($event)"
+  showFirstLastButtons
+  aria-label="Select page of students">
+</mat-paginator>
 
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 

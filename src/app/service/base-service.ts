@@ -2,6 +2,7 @@ import { Injectable} from '@angular/core';
 import { Student } from '../models/student';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Paginator } from '../paginator';
 
 @Injectable({
     providedIn: 'root'}
@@ -13,6 +14,14 @@ export class BaseService {
 
     constructor(private http: HttpClient){
 
+    }
+
+    getStudentPage(page: number, limit: number, search: string = ''): Observable<Paginator> {
+      let url = `${this.studentsUrl}?page=${page}&limit=${limit}`;
+      if (search.trim()){
+        url += `&surname=*${search}*`;
+      }
+    return this.http.get<Paginator>(url);
     }
 
     getAllStudents(): Observable<Student[]> {
